@@ -1,0 +1,235 @@
+<html>
+  <head>
+  <title>Timestamp tools</title>
+  <style type="text/css">
+
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+  }
+
+h1 {
+  text-align:center;
+  font-size:130%;
+}
+
+h2 {
+  font-size:105%;
+  margin:5px 0;
+}
+
+h3 {
+  font-size:103%;
+  margin:0;
+}
+
+.wrapper {
+  width : 900px;
+  border: 1px solid #ccc;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.content-block {
+  width : 400px;
+  margin : 10px;
+  padding : 10px;
+  border : 1px solid #aaa;
+}
+
+.time-table tr td {
+  padding-top:5px;
+}
+
+.inner-block {
+  border:1px solid #bbb;
+  padding:3px;
+  margin:5px 0;
+}
+
+ul {
+  list-style:none;
+}
+  </style>
+  <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-2819287-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+  </script>
+  </head>
+  <body>
+    <h1> Timestamp Tools </h1>
+    <div class="wrapper clearfix">
+      <div style="float:left;">
+        <div class="content-block">
+          <input id="copybtn" type="button" style="float:right;" value="Copy->">
+          <input id="updatebtn" type="button" style="float:right;" value="Update">
+          <h2>Current : </h2>
+          <table class="time-table">
+            <tr> <td> Time </td><td>: <span id="current-timestamp-human"></span></td></tr>
+            <tr> <td> Timezone </td><td>: <span id="current-timezone-human"></span></td></tr>
+            <tr> <td> Timestamp </td><td>: <input type="text" id="current-timestamp" value=''></td></tr>
+          </table>
+        </div>
+        <div class="content-block">
+          <input id="copy-create-btn" type="button" style="float:right;" value="Copy->">
+          <input id="update-create-btn" type="button" style="float:right;" value="Create">
+          <h2>Create : </h2>
+          <div class="inner-block">
+            <select id="create-days"><option>dd</option></select>/
+            <select id="create-month"><option>mm</option></select>/
+            <select id="create-yr"><option>yy</option</select> 
+            <select id="create-hr"><option>hr</option></select>:
+            <select id="create-min"><option>min</option></select>
+          </div>
+
+          <table class="time-table">
+            <tr> <td> Timestamp </td><td>: <input type="text" id="custom-timestamp" value=''></td></tr>
+            <tr> <td> Time </td><td>: <span id="custom-timestamp-human"></span></td></tr>
+            <tr> <td> Timezone </td><td>: <span id="custom-timezone-human"></span></td></tr>
+          </table>
+        </div>
+        <div class="content-block">
+          <input id="copy-custom-btn" type="button" style="float:right;" value="Copy->">
+          <input id="update-custom-btn" type="button" style="float:right;" value="Display">
+          <h2>Custom : </h2>
+          <table class="time-table">
+            <tr> <td> Timestamp </td><td>: <input type="text" id="custom-timestamp" value=''></td></tr>
+            <tr> <td> Time </td><td>: <span id="custom-timestamp-human"></span></td></tr>
+            <tr> <td> Timezone </td><td>: <span id="custom-timezone-human"></span></td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="content-block" style="float:left;">
+        <h2>Calculate</h2>
+        <h3>Initial:</h3>
+        <table class="time-table">
+          <tr> <td> Time </td><td>: <span id="initial-timestamp-human"></span></td></tr>
+          <tr> <td> Timezone </td><td>: <span id="initial-timezone-human"></span></td></tr>
+          <tr> <td> Timestamp </td><td>: <input type="text" id="initial-timestamp" value=''></td></tr>
+        </table>
+
+        <div class="inner-block" style="margin:30px 0;">
+          <select id="operation"><option value="add">Add</option><option value="sub">Sub</option></select>
+          <select id="calc-yr"></select> Yrs
+          <select id="calc-month"></select> Months
+          <select id="calc-days"></select> Days
+          <select id="calc-hrs"></select> Hrs
+          <div style="text-align:center; margin:5px;" >
+          <input type="button" style="margin:2px auto;" value="Calculate" id="calculate">
+          </div>
+        </div>
+        <h3>Calculated:</h3>
+        <table class="time-table">
+          <tr> <td> Time </td><td>: <span id="calculated-timestamp-human"></span></td></tr>
+          <tr> <td> Timezone </td><td>: <span id="calculated-timezone-human"></span></td></tr>
+          <tr> <td> Timestamp </td><td>: <input type="text" id="calculated-timestamp" value=''></td></tr>
+        </table>
+      </div>
+    </div>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://hacks.bluesmoon.info/strftime/strftime-min.js"></script>
+    <script type="text/javascript">
+    var Timestamp = { current : {}, custom : {}};
+    (function(){
+     Timestamp.update = function() {
+       Timestamp.current.dateObj     = new Date();
+       Timestamp.current.timeStamp   =  Math.floor(Number(Timestamp.current.dateObj / 1000));
+       Timestamp.current.timeString  = Timestamp.current.dateObj.strftime('%a, %d %b \'%y %I:%M:%S %p');
+       Timestamp.current.timeZoneStr = Timestamp.current.dateObj.strftime('%Z (%z)');
+
+       $('#current-timestamp').val(Timestamp.current.timeStamp);
+       $('#current-timestamp-human').html(Timestamp.current.timeString);
+       $('#current-timezone-human').html(Timestamp.current.timeZoneStr);
+     }
+
+     Timestamp.customCalculate = function () {
+        var ts = $('#custom-timestamp').val();
+        Timestamp.custom.dateObj     = new Date(ts*1000);
+        Timestamp.custom.timeStamp   = Math.floor(Number(Timestamp.custom.dateObj / 1000));
+        Timestamp.custom.timeString  = Timestamp.custom.dateObj.strftime('%a, %d %b \'%y %I:%M:%S %p');
+        Timestamp.custom.timeZoneStr = Timestamp.custom.dateObj.strftime('%Z (%z)');
+        
+        $('#custom-timestamp-human').html(Timestamp.custom.timeString);
+        $('#custom-timezone-human').html(Timestamp.custom.timeZoneStr);
+     }
+
+     Timestamp.copy = function(evt) {
+       if(evt.data.src == 'current')
+       {
+         var timeObj = Timestamp.current;
+       }  else {
+         var timeObj = Timestamp.custom;
+       }
+
+       $('#initial-timestamp').val(timeObj.timeStamp);
+       $('#initial-timestamp-human').html(timeObj.timeString);
+       $('#initial-timezone-human').html(timeObj.timeZoneStr);
+     }
+
+     Timestamp.filltime = function(node,limit,start) {
+       if(!start) 
+          start = 0;
+        for(var i=start;i<limit;i++)
+        {
+          $('#' + node).append("<option value='"+ i +"'>"+ i +"</option>"); 
+        }
+     }
+
+     Timestamp.calculate = function() {
+         var yr    = $('#calc-yr').val();
+         var month = $('#calc-month').val();
+         var days  = $('#calc-days').val();
+         var hrs   = $('#calc-hrs').val();
+         var difference = yr*365*24*3600;
+         difference += month*30*24*3600;
+         difference += days*24*3600;
+         difference += hrs*3600;
+         if($('#operation').val() == 'sub')
+            difference = difference * -1;
+
+         var newts = Number($('#initial-timestamp').val())  + difference;
+         var newdate = new Date(newts*1000);
+         $('#calculated-timestamp').val(newts);
+         $('#calculated-timestamp-human').html(newdate.strftime('%a, %d %b \'%y %I:%M:%S %p'));
+         $('#calculated-timezone-human').html(newdate.strftime('%Z (%z)'));
+     }
+
+     $('#updatebtn').bind('click',Timestamp.update);
+     $('#copybtn').bind('click', {src : 'current'}, Timestamp.copy);
+     $('#current-timestamp').bind('focus',function(){this.select();});
+     $('#initial-timestamp').bind('focus',function(){this.select();});
+     $('#calculated-timestamp').bind('focus',function(){this.select();});
+     $('#copy-custom-btn').bind('click', {src : 'custom'}, Timestamp.copy);
+     $('#update-custom-btn').bind('click',Timestamp.customCalculate);
+     $('#updatebtn').bind('click',Timestamp.update);
+     $('#calculate').bind('click',Timestamp.calculate);
+     Timestamp.filltime('create-yr',2999,2000);
+     Timestamp.filltime('create-month',13,1);
+     Timestamp.filltime('create-days',32,1);
+     Timestamp.filltime('create-hr',24,1);
+     Timestamp.filltime('create-min',60,1);
+
+     Timestamp.filltime('calc-yr',99);
+     Timestamp.filltime('calc-month',99);
+     Timestamp.filltime('calc-days',99);
+     Timestamp.filltime('calc-hrs',99);
+
+     Timestamp.update();
+     Timestamp.copy({ data : { src : 'current'}});
+
+     })();
+    </script>
+  </body>
+</html>
