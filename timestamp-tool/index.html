@@ -61,6 +61,18 @@ h3 {
 ul {
   list-style:none;
 }
+
+.create-date-table td {
+    font-size:12px;
+    text-align:center;
+}
+
+
+.normalbutton {
+    border:1px solid #000;
+    background-color:#eee;
+}
+
   </style>
   <script type="text/javascript">
 
@@ -82,8 +94,8 @@ ul {
     <div class="wrapper clearfix">
       <div style="float:left;">
         <div class="content-block">
-          <input id="copybtn" type="button" style="float:right;" value="Copy->">
-          <input id="updatebtn" type="button" style="float:right;" value="Update">
+          <input id="copybtn" class="normalbutton"  type="button" style="float:right;" value="Copy->">
+          <input id="toggleupdate" class="normalbutton"  type="button" style="float:right;" value="Pause">
           <h2>Current : </h2>
           <table class="time-table">
             <tr> <td> Time </td><td>: <span id="current-timestamp-human"></span></td></tr>
@@ -92,15 +104,18 @@ ul {
           </table>
         </div>
         <div class="content-block">
-          <input id="copy-create-btn" type="button" style="float:right;" value="Copy->">
-          <input id="update-create-btn" type="button" style="float:right;" value="Create">
+          <input id="copy-create-btn" class="normalbutton"  type="button" style="float:right;" value="Copy->">
+          <input id="update-create-btn" class="normalbutton"  type="button" style="float:right;" value="Create">
           <h2>Choose a date : </h2>
           <div class="inner-block">
-            <select id="create-date"><option>dd</option></select>/
-            <select id="create-month"><option>mm</option></select>/
-            <select id="create-yr"><option>yy</option></select> 
-            <select id="create-hr"><option>hr</option></select>:
-            <select id="create-min"><option>min</option></select>
+              <table class="create-date-table">
+                  <tr><td>Date</td><td></td><td>Month</td><td></td><td>Year</td><td>Hour</td><td></td><td>Min</td></tr>
+            <tr><td><select id="create-date"><option>dd</option></select></td><td>/</td>
+            <td><select id="create-month"><option>mm</option></select></td><td>/</td>
+            <td><select id="create-yr"><option>yy</option></select></td> 
+            <td><select id="create-hr"><option>hr</option></select></td><td>:</td>
+            <td><select id="create-min"><option>min</option></select></td></tr>
+            </table>
           </div>
 
           <table class="time-table">
@@ -111,8 +126,8 @@ ul {
         </div>
 
         <div class="content-block">
-          <input id="copy-custom-btn" type="button" style="float:right;" value="Copy->">
-          <input id="update-custom-btn" type="button" style="float:right;" value="Display">
+          <input id="copy-custom-btn" class="normalbutton"  type="button" style="float:right;" value="Copy->">
+          <input id="update-custom-btn" class="normalbutton"  type="button" style="float:right;" value="Display">
           <h2>Timestamp to Date : </h2>
           <table class="time-table">
             <tr> <td> Timestamp </td><td>: <input type="text" id="custom-timestamp" value=''></td></tr>
@@ -137,7 +152,7 @@ ul {
           <select id="calc-days"></select> Days
           <select id="calc-hrs"></select> Hrs
           <div style="text-align:center; margin:5px;" >
-          <input type="button" style="margin:2px auto;" value="Calculate" id="calculate">
+          <input class="normalbutton"  type="button" style="margin:2px auto;" value="Calculate" id="calculate">
           </div>
         </div>
         <h3>Calculated:</h3>
@@ -156,6 +171,7 @@ ul {
     (function(){
      Timestamp.HUMANTIME = '%a, %d %b \'%y %I:%M:%S %p';
      Timestamp.TIMEZONE  = '%Z (%z)';
+     Timestamp.timer     = 0;
      Timestamp.update = function() {
        Timestamp.current.dateObj     = new Date();
        Timestamp.current.timeStamp   =  Math.floor(Number(Timestamp.current.dateObj / 1000));
@@ -166,6 +182,8 @@ ul {
        $('#current-timestamp-human').html(Timestamp.current.timeString);
        $('#current-timezone-human').html(Timestamp.current.timeZoneStr);
      }
+     
+    
 
      Timestamp.createFromTimestamp = function () {
         var year  = $('#create-yr').val();
@@ -246,8 +264,31 @@ ul {
           $('#' + node).append("<option value='"+ i +"'>"+ stringi +"</option>"); 
         }
      }
+     
+     Timestamp.togglePause = function() {
+       if(Timestamp.timer) {
+           clearInterval(Timestamp.timer);
+           Timestamp.timer = 0;
+           $('#toggleupdate').val('Play');
+       } 
+       else
+       {
+           Timestamp.timer = setInterval(Timestamp.update,1000);
+           $('#toggleupdate').val('Pause');
+       }
+     };
+     
+     Timestamp.chooserSetTime = function() {
+         var curDate = new Date();
+         console.log(curDate.getFullYear());
+         
+         $('#create-yr').val(curDate.getFullYear());
+         $('#create-month').val(curDate.getMonth());
+         $('#create-date').val(curDate.getDate());
+         $('#create-hr').val(curDate.getHours());
+         $('#create-min').val(curDate.getMinutes());
+     }
 
-     $('#updatebtn').bind('click',Timestamp.update);
      $('#copybtn').bind('click', {src : 'current'}, Timestamp.copy);
      $('#current-timestamp').bind('focus',function(){this.select();});
      $('#initial-timestamp').bind('focus',function(){this.select();});
@@ -256,7 +297,7 @@ ul {
      $('#update-create-btn').bind('click',Timestamp.createFromTimestamp);
      $('#copy-custom-btn').bind('click', {src : 'custom'}, Timestamp.copy);
      $('#update-custom-btn').bind('click',Timestamp.customCalculate);
-     $('#updatebtn').bind('click',Timestamp.update);
+     $('#toggleupdate').bind('click',Timestamp.togglePause);
      $('#calculate').bind('click',Timestamp.calculate);
      Timestamp.filltime('create-yr',2999,1970);
      Timestamp.filltime('create-month',13,1);
@@ -271,12 +312,16 @@ ul {
 
      Timestamp.update();
      Timestamp.copy({ data : { src : 'current'}});
+     Timestamp.chooserSetTime();
+     
+     Timestamp.timer = setInterval(Timestamp.update, 1000);
 
      })();
     </script>
     <div style="width: 50%; margin: 50px auto; border: 1px solid rgb(119, 119, 119); padding: 10px;">
       <h3>Changelog</h3>
       <table>
+        <tr><td>2011-05-25</td><td>Add auto update, choose date shows current date</td></tr>
         <tr><td>2011-04-20</td><td>Fix the minute issue</td></tr>
         <tr><td>2010-12-06</td><td>Creating date from timestamp and dropdown works now, added this changelog</td></tr>
         <tr><td>2010-09-02</td><td>First release</td></tr>
