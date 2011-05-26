@@ -302,8 +302,8 @@ ul {
      Timestamp.filltime('create-yr',2999,1970);
      Timestamp.filltime('create-month',13,1);
      Timestamp.filltime('create-date',32,1);
-     Timestamp.filltime('create-hr',24,1);
-     Timestamp.filltime('create-min',60,1);
+     Timestamp.filltime('create-hr',24,0);
+     Timestamp.filltime('create-min',60,0);
 
      Timestamp.filltime('calc-yr',99);
      Timestamp.filltime('calc-month',99);
@@ -321,6 +321,7 @@ ul {
     <div style="width: 50%; margin: 50px auto; border: 1px solid rgb(119, 119, 119); padding: 10px;">
       <h3>Changelog</h3>
       <table>
+        <tr><td>2011-05-26</td><td>Added 00 as per manu's request</td></tr>
         <tr><td>2011-05-25</td><td>Add auto update, choose date shows current date</td></tr>
         <tr><td>2011-04-20</td><td>Fix the minute issue</td></tr>
         <tr><td>2010-12-06</td><td>Creating date from timestamp and dropdown works now, added this changelog</td></tr>
