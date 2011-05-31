@@ -116,8 +116,12 @@ class APIHandler(webapp.RequestHandler):
     return return_object
 
   def get(self,pnrnumber):
-      htmlcontent = self.getPNRStatus(pnrnumber)
+      htmlcontent = str(self.getPNRStatus(pnrnumber))
       self.response.headers['Content-Type'] = 'application/json'
+      jsonp = self.request.get("jsonp")
+      if len(jsonp) > 0 :
+        htmlcontent = jsonp + '(' + htmlcontent + ')'
+
       self.response.out.write(htmlcontent)
 
 
