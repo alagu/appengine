@@ -1,3 +1,4 @@
+This repository is for my appengine hacks:
 
-
-1. Timestamp tools  - http://timestamp-tool.appspot.com/
+Timestamp tools  - http://timestamp-tool.appspot.com/ - A simple timestamp tool
+PNR Enquiry API  - http://pnrapi.appspot.com/ - API for fetching PNR status for Indian Railways
