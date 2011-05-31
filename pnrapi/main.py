@@ -2,9 +2,11 @@ from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext import db
+from google.appengine.ext.webapp import template
 import datetime
 import httplib, urllib
 import re
+import os
 
 
 class APIHandler(webapp.RequestHandler):
@@ -45,7 +47,7 @@ class APIHandler(webapp.RequestHandler):
           statuslines.append(line)
 
       if len(statuslines) == 0:
-        return_object['status'] = 'ERROR'
+        return_object['status'] = 'INVALID'
         return_object['data']   = 'No results'
       #check here
 
@@ -121,8 +123,8 @@ class APIHandler(webapp.RequestHandler):
 
 class DefaultHandler(webapp.RequestHandler):
   def get(self):
-      self.response.headers['Content-Type'] = 'text/plain'
-      self.response.out.write('Error');
+      path = os.path.join(os.path.dirname(__file__), 'man.html')
+      self.response.out.write(template.render(path, {}))
 
 def main():
   application = webapp.WSGIApplication([('/(\d{10})', APIHandler),
