@@ -7,6 +7,7 @@ import datetime
 import httplib, urllib
 import re
 import os
+import time
 
 
 class APIHandler(webapp.RequestHandler):
@@ -71,7 +72,9 @@ class APIHandler(webapp.RequestHandler):
               return_object['data']['train_name'] = statement
               #print 'Train Name: ' + statement
             elif(i==2):
-              return_object['data']['travel_date'] = statement
+              date = statement.replace(' ','')
+              timeobj = time.strptime(date, "%d-%m-%Y")
+              return_object['data']['travel_date'] = {'timestamp':int(time.mktime(timeobj)),'date':date}
               #print 'Travel Date:' + statement
             elif(i==3):
               return_object['data']['from'] = statement
@@ -107,6 +110,7 @@ class APIHandler(webapp.RequestHandler):
                   passenger_line = passenger_line + 1
               
             i=i+1
+            return_object['data']['pnr_number'] = pnrnumber
     except:
       return_object['status'] = 'TIMEOUT'
       return_object['data']   = 'Request Timed Out'
